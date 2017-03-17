@@ -40,9 +40,6 @@ def resize_with_pad(image, height=IMAGE_SIZE, width=IMAGE_SIZE):
 
 def predict(model_path, image):
     model = load_model(model_path)
-    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd,
-        metrics=['accuracy'])
 
     if image.shape != (1, IMAGE_SIZE, IMAGE_SIZE, 3):
         image = resize_with_pad(image)
@@ -53,11 +50,11 @@ def predict(model_path, image):
     result = model.predict_proba(image) # numpy.ndarray
     print(result)
 
-    predictions = result[0].tolist()
-    if predictions[0] > 0.8:
-        return 0 # boss
-    else:
-        return 1 # non boss
+    # predictions = result[0].tolist()
+    # if predictions[0] > 0.8:
+    #     return 0 # boss
+    # else:
+    #     return 1 # non boss
 
-    # result = model.predict_classes(image)
-    # return result[0]
+    result = model.predict_classes(image)
+    return result[0]

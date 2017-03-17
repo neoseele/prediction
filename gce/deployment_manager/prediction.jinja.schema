@@ -15,7 +15,7 @@
 # [START all]
 
 info:
-  title: Bookshelf GCE Deploy
+  title: Boss Prediction GCE Deploy
   author: Google Inc.
   description: Creates a GCE Deployment
 

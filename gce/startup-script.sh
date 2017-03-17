@@ -32,8 +32,8 @@ apt-get install -yq \
     git build-essential supervisor python python-dev python-pip libffi-dev \
     libssl-dev
 
-# Create a pythonapp user. The application will run as this user.
-useradd -m -d /home/pythonapp pythonapp
+# Create a predictionsvc user. The application will run as this user.
+useradd -m -d /home/predictionsvc predictionsvc
 
 # pip from apt is out of date, so make it update itself and install virtualenv.
 pip install --upgrade pip virtualenv
@@ -45,14 +45,14 @@ git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/$PROJECTID/r/prediction /opt/app
 
 # Install app dependencies
-virtualenv /opt/app/env
+virtualenv -p /usr/bin/python3 /opt/app/env
 /opt/app/env/bin/pip install -r /opt/app/requirements.txt
 
 # Fetch the model from gcs
 gsutil cp gs://$PROJECTID/models/model.h5 /opt/app
 
-# Make sure the pythonapp user owns the application code
-chown -R pythonapp:pythonapp /opt/app
+# Make sure the predictionsvc user owns the application code
+chown -R predictionsvc:predictionsvc /opt/app
 
 # Configure supervisor to start gunicorn inside of our virtualenv and run the
 # application.
@@ -62,11 +62,11 @@ directory=/opt/app/
 command=/opt/app/env/bin/gunicorn main:app --bind 0.0.0.0:8080
 autostart=true
 autorestart=true
-user=pythonapp
+user=predictionsvc
 # Environment variables ensure that the application runs inside of the
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/env",PATH="/opt/app/env/bin",\
-    HOME="/home/pythonapp",USER="pythonapp"
+    HOME="/home/predictionsvc",USER="predictionsvc"
 stdout_logfile=syslog
 stderr_logfile=syslog
 EOF

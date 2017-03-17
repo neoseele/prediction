@@ -7,8 +7,11 @@ import numpy as np
 import cv2
 from google.cloud import error_reporting
 import google.cloud.logging
+# import pprint
 
 def create_app(config, debug=False, testing=False, config_overrides=None):
+    # pp = pprint.PrettyPrinter(indent=4)
+
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -37,20 +40,18 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
         except Exception:
             return jsonify(status_code='400', msg='Bad Request'), 400
 
-        data = base64.b64decode(data)
-
-        image = io.BytesIO(data)
+        image = io.BytesIO(base64.b64decode(data))
         img = cv2.imdecode(np.fromstring(image.getvalue(), dtype=np.uint8), 1)
 
-        data = {}
+        response = {}
         prediction = model.predict(app.config['MODEL_PATH'], img)
         if prediction == 0:
-            data['prediction'] = 'boss'
+            response['prediction'] = 'boss'
         else:
-            data['prediction'] = 'other'
+            response['prediction'] = 'other'
 
         current_app.logger.info('Prediction: %s', prediction)
-        return jsonify(data)
+        return jsonify(response)
 
     # Add an error handler that reports exceptions to Stackdriver Error
     # Reporting. Note that this error handler is only used when Debug
