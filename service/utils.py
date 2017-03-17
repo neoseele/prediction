@@ -33,6 +33,5 @@ def resize_with_pad(image, height=IMAGE_SIZE, width=IMAGE_SIZE):
 
 def debug(msg):
     print("DEBUG:{} [{}]".format(
-        msg,
-        datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+        msg, datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
     )
