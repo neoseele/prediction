@@ -22,10 +22,10 @@ GROUP=prediction-group
 TEMPLATE=$GROUP-tmpl
 MACHINE_TYPE=g1-small
 STARTUP_SCRIPT=gce/startup-script.sh
-IMAGE_FAMILY=ubuntu-1604-lts
-IMAGE_PROJECT=ubuntu-os-cloud
-# IMAGE_FAMILY=debian-8
-# IMAGE_PROJECT=debian-cloud
+# IMAGE_FAMILY=ubuntu-1604-lts
+# IMAGE_PROJECT=ubuntu-os-cloud
+IMAGE_FAMILY=debian-8
+IMAGE_PROJECT=debian-cloud
 SCOPES="userinfo-email,\
 logging-write,\
 storage-full,\
@@ -34,9 +34,10 @@ https://www.googleapis.com/auth/pubsub,\
 https://www.googleapis.com/auth/projecthosting"
 TAGS=http-server
 
-MIN_INSTANCES=2
+MIN_INSTANCES=4
 MAX_INSTANCES=10
-TARGET_UTILIZATION=0.6
+COOL_DOWN_PERIOD=120
+TARGET_UTILIZATION=0.8
 
 SERVICE=prediction-service
 
@@ -72,7 +73,7 @@ gcloud compute instance-groups managed \
 # [START create_named_port]
 gcloud compute instance-groups managed set-named-ports \
     $GROUP \
-    --named-port http:8080 \
+    --named-ports http:8080 \
     --zone $ZONE
 # [END create_named_port]
 
@@ -108,14 +109,14 @@ gcloud compute http-health-checks create ah-health-check \
 # [START create_backend_service]
 gcloud compute backend-services create $SERVICE \
   --global \
-  --http-health-check ah-health-check
+  --http-health-checks ah-health-check
 # [END create_backend_service]
 
 # [START add_backend_service]
 gcloud compute backend-services add-backend $SERVICE \
   --global \
   --instance-group $GROUP \
-  --instance-zone $ZONE
+  --instance-group-zone $ZONE
 # [END add_backend_service]
 
 # Create a URL map and web Proxy. The URL map will send all requests to the
@@ -147,6 +148,7 @@ gcloud compute forwarding-rules create $SERVICE-http-rule \
 gcloud compute instance-groups managed set-autoscaling \
   $GROUP \
   --max-num-replicas $MAX_INSTANCES \
+  --cool-down-period $COOL_DOWN_PERIOD \
   --target-load-balancing-utilization $TARGET_UTILIZATION \
   --zone $ZONE
 # [END set_autoscaling]

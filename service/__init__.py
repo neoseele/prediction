@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, current_app, request, jsonify
 import io
-from service import model
 import base64
 import logging
 import numpy as np
 import cv2
 from google.cloud import error_reporting
 import google.cloud.logging
-# import pprint
+from service import model
 
 def create_app(config, debug=False, testing=False, config_overrides=None):
-    # pp = pprint.PrettyPrinter(indent=4)
 
     app = Flask(__name__)
     app.config.from_object(config)
@@ -45,7 +43,7 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
         img = cv2.imdecode(np.fromstring(image.getvalue(), dtype=np.uint8), 1)
 
         response = {}
-        prediction = model.predict(app.config['MODEL_PATH'], img)
+        prediction = model.predict(img)
         if prediction == 0:
             response['prediction'] = 'boss'
         else:

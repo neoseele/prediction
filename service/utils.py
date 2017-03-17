@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import cv2
 import datetime
-from config import IMAGE_SIZE
 
-def resize_with_pad(image, height=IMAGE_SIZE, width=IMAGE_SIZE):
+def resize_with_pad(image, height, width):
 
     def get_padding_size(image):
         h, w, _ = image.shape
