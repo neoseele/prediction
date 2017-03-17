@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, current_app, request, jsonify
 import io
 from service import model
