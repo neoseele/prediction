@@ -22,11 +22,12 @@ resources:
   type: prediction.jinja
   properties:
     zone: us-central1-a
-    machine-type: g1-small
+    #machine-type: g1-small
+    machine-type: n1-highcpu-2
     machine-image: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/family/debian-8
-    min-instances: 2
+    min-instances: 3
     max-instances: 10
-    target-utilization: 0.6
+    target-utilization: 0.8
     scopes:
     - https://www.googleapis.com/auth/cloud-platform
 

@@ -53,6 +53,7 @@ SERVICE=prediction-service
 gcloud compute instance-templates create $TEMPLATE \
   --machine-type $MACHINE_TYPE \
   --scopes $SCOPES \
+  --metadata serial-port-enable=1 \
   --metadata-from-file startup-script=$STARTUP_SCRIPT \
   --image-family $IMAGE_FAMILY \
   --image-project $IMAGE_PROJECT \

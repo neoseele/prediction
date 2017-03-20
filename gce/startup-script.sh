@@ -30,7 +30,7 @@ service google-fluentd restart &
 apt-get update
 apt-get install -yq \
     git build-essential supervisor python python-dev python-pip libffi-dev \
-    libssl-dev
+    libssl-dev libglib2.0-0
 
 # Create a predictionsvc user. The application will run as this user.
 useradd -m -d /home/predictionsvc predictionsvc

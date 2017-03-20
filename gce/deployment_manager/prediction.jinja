@@ -14,8 +14,8 @@ limitations under the License.
 {# [START all] #}
 
 {# [START env] #}
-{% set NAME = "prediction-" + env["deployment"] %}
-{% set SERVICE = "prediction-" + env["deployment"] + "-service" %}
+{% set NAME = env["deployment"] %}
+{% set SERVICE = env["deployment"] + "-service" %}
 {# [END env] #}
 
 #
@@ -51,6 +51,8 @@ resources:
             value: |
 {{imports['startup-script']|indent(14, true)}}
 {# [END startup] #}
+          - key: serial-port-enable
+            value: 1
       networkInterfaces:
           - network: global/networks/default
             accessConfigs:
@@ -107,7 +109,7 @@ resources:
     portName: http
     backends:
 {# [START reference] #}
-      - group: $(ref.{{ NAME }}-frontend-group.instanceGroup)
+      - group: $(ref.{{ NAME }}-service-group.instanceGroup)
         zone: {{ properties['zone'] }}
 {# [END reference] #}
 
@@ -141,7 +143,7 @@ resources:
   type: compute.v1.autoscaler
   properties:
     zone: {{ properties['zone'] }}
-    target: $(ref.{{ NAME }}-frontend-group.selfLink)
+    target: $(ref.{{ NAME }}-service-group.selfLink)
     autoscalingPolicy:
 {# [START properties] #}
       minNumReplicas: {{ properties['min-instances'] }}
