@@ -31,7 +31,11 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
     def health_check():
         return 'ok', 200
 
-    @app.route('/', methods=['POST'])
+    @app.route('/', methods=['GET'])
+    def root():
+        return 'Hello!', 200
+
+    @app.route('/predict', methods=['POST'])
     def predict():
         data = {}
         try:
