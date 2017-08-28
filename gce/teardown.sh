@@ -15,7 +15,9 @@
 
 set -x
 
-ZONE=us-central1-a
+REGION=australia-southeast1
+ZONE=australia-southeast1-a
+gcloud config set compute/region $REGION
 gcloud config set compute/zone $ZONE
 
 GROUP=prediction-group

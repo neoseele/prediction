@@ -15,13 +15,13 @@
 
 set -ex
 
-REGION=us-central1
-ZONE=us-central1-a
+REGION=australia-southeast1
+ZONE=australia-southeast1-a
 
 GROUP=prediction-group
 TEMPLATE=$GROUP-tmpl
 MACHINE_TYPE=g1-small
-STARTUP_SCRIPT=gce/startup-script.sh
+STARTUP_SCRIPT=startup-script.sh
 # IMAGE_FAMILY=ubuntu-1604-lts
 # IMAGE_PROJECT=ubuntu-os-cloud
 IMAGE_FAMILY=debian-8
@@ -34,7 +34,7 @@ https://www.googleapis.com/auth/pubsub,\
 https://www.googleapis.com/auth/projecthosting"
 TAGS=http-server
 
-MIN_INSTANCES=4
+MIN_INSTANCES=1
 MAX_INSTANCES=10
 COOL_DOWN_PERIOD=120
 TARGET_UTILIZATION=0.8
