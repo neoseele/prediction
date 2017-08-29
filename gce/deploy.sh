@@ -50,14 +50,14 @@ SERVICE=prediction-service
 # to create new instances.
 
 # [START create_template]
-gcloud compute instance-templates create $TEMPLATE \
-  --machine-type $MACHINE_TYPE \
-  --scopes $SCOPES \
-  --metadata serial-port-enable=1 \
-  --metadata-from-file startup-script=$STARTUP_SCRIPT \
-  --image-family $IMAGE_FAMILY \
-  --image-project $IMAGE_PROJECT \
-  --tags $TAGS
+# gcloud compute instance-templates create $TEMPLATE \
+#   --machine-type $MACHINE_TYPE \
+#   --scopes $SCOPES \
+#   --metadata serial-port-enable=1 \
+#   --metadata-from-file startup-script=$STARTUP_SCRIPT \
+#   --image-family $IMAGE_FAMILY \
+#   --image-project $IMAGE_PROJECT \
+#   --tags $TAGS
 # [END create_template]
 
 # Create the managed instance group.
@@ -72,10 +72,10 @@ gcloud compute instance-groups managed \
 # [END create_group]
 
 # [START create_named_port]
-gcloud compute instance-groups managed set-named-ports \
-    $GROUP \
-    --named-ports http:8080 \
-    --zone $ZONE
+# gcloud compute instance-groups managed set-named-ports \
+#     $GROUP \
+#     --named-ports http:8080 \
+#     --zone $ZONE
 # [END create_named_port]
 
 #
@@ -99,65 +99,65 @@ gcloud compute instance-groups managed set-named-ports \
 # Note that health checks will not cause the load balancer to shutdown any instances.
 
 # [START create_health_check]
-gcloud compute http-health-checks create ah-health-check \
-  --request-path /_ah/health \
-  --port 8080
+# gcloud compute http-health-checks create ah-health-check \
+#   --request-path /_ah/health \
+#   --port 8080
 # [END create_health_check]
 
 # Create a backend service, associate it with the health check and instance group.
 # The backend service serves as a target for load balancing.
 
 # [START create_backend_service]
-gcloud compute backend-services create $SERVICE \
-  --global \
-  --http-health-checks ah-health-check
+# gcloud compute backend-services create $SERVICE \
+#   --global \
+#   --http-health-checks ah-health-check
 # [END create_backend_service]
 
 # [START add_backend_service]
-gcloud compute backend-services add-backend $SERVICE \
-  --global \
-  --instance-group $GROUP \
-  --instance-group-zone $ZONE
+# gcloud compute backend-services add-backend $SERVICE \
+#   --global \
+#   --instance-group $GROUP \
+#   --instance-group-zone $ZONE
 # [END add_backend_service]
 
 # Create a URL map and web Proxy. The URL map will send all requests to the
 # backend service defined above.
 
 # [START create_url_map]
-gcloud compute url-maps create $SERVICE-map \
-  --default-service $SERVICE
+# gcloud compute url-maps create $SERVICE-map \
+#   --default-service $SERVICE
 # [END create_url_map]
 
 # [START create_http_proxy]
-gcloud compute target-http-proxies create $SERVICE-proxy \
-  --url-map $SERVICE-map
+# gcloud compute target-http-proxies create $SERVICE-proxy \
+#   --url-map $SERVICE-map
 # [END create_http_proxy]
 
 # Create a global forwarding rule to send all traffic to our proxy
 
 # [START create_forwarding_rule]
-gcloud compute forwarding-rules create $SERVICE-http-rule \
-  --global \
-  --target-http-proxy $SERVICE-proxy \
-  --ports 8080
+# gcloud compute forwarding-rules create $SERVICE-http-rule \
+#   --global \
+#   --target-http-proxy $SERVICE-proxy \
+#   --ports 8080
 # [END create_forwarding_rule]
 
 #
 # Autoscaler configuration
 #
 # [START set_autoscaling]
-gcloud compute instance-groups managed set-autoscaling \
-  $GROUP \
-  --max-num-replicas $MAX_INSTANCES \
-  --cool-down-period $COOL_DOWN_PERIOD \
-  --target-load-balancing-utilization $TARGET_UTILIZATION \
-  --zone $ZONE
+# gcloud compute instance-groups managed set-autoscaling \
+#   $GROUP \
+#   --max-num-replicas $MAX_INSTANCES \
+#   --cool-down-period $COOL_DOWN_PERIOD \
+#   --target-load-balancing-utilization $TARGET_UTILIZATION \
+#   --zone $ZONE
 # [END set_autoscaling]
 
 # [START create_firewall]
-gcloud compute firewall-rules create default-allow-http-8080 \
-    --allow tcp:8080 \
-    --source-ranges 0.0.0.0/0 \
-    --target-tags $TAGS \
-    --description "Allow port 8080 access to $TAGS"
+# gcloud compute firewall-rules create default-allow-http-8080 \
+#     --allow tcp:8080 \
+#     --source-ranges 0.0.0.0/0 \
+#     --target-tags $TAGS \
+#     --description "Allow port 8080 access to $TAGS"
 # [END create_firewall]
