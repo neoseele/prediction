@@ -21,6 +21,8 @@ gcloud config set compute/zone $ZONE
 GROUP=prediction-group
 TEMPLATE=$GROUP-tmpl
 SERVICE=prediction-service
+HC=prediction-hc
+PORT=8080
 
 gcloud compute instance-groups managed stop-autoscaling $GROUP --zone $ZONE
 
@@ -32,10 +34,10 @@ gcloud compute url-maps delete $SERVICE-map
 
 gcloud compute backend-services delete $SERVICE --global
 
-gcloud compute http-health-checks delete ah-health-check
+gcloud compute http-health-checks delete $HC
 
 gcloud compute instance-groups managed delete $GROUP
 
 gcloud compute instance-templates delete $TEMPLATE
 
-gcloud compute firewall-rules delete default-allow-http-8080
+gcloud compute firewall-rules delete $SERVICE-allow-http-$PORT

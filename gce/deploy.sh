@@ -34,12 +34,14 @@ https://www.googleapis.com/auth/pubsub,\
 https://www.googleapis.com/auth/projecthosting"
 TAGS=http-server
 
-MIN_INSTANCES=4
-MAX_INSTANCES=10
+MIN_INSTANCES=2
+MAX_INSTANCES=4
 COOL_DOWN_PERIOD=120
 TARGET_UTILIZATION=0.8
 
 SERVICE=prediction-service
+HC=prediction-hc
+PORT=8080
 
 #
 # Instance group setup
@@ -63,8 +65,7 @@ gcloud compute instance-templates create $TEMPLATE \
 # Create the managed instance group.
 
 # [START create_group]
-gcloud compute instance-groups managed \
-  create $GROUP \
+gcloud compute instance-groups managed create $GROUP \
   --base-instance-name $GROUP \
   --size $MIN_INSTANCES \
   --template $TEMPLATE \
@@ -72,10 +73,9 @@ gcloud compute instance-groups managed \
 # [END create_group]
 
 # [START create_named_port]
-gcloud compute instance-groups managed set-named-ports \
-    $GROUP \
-    --named-ports http:8080 \
-    --zone $ZONE
+gcloud compute instance-groups managed set-named-ports $GROUP \
+  --named-ports http:$PORT \
+  --zone $ZONE
 # [END create_named_port]
 
 #
@@ -99,9 +99,9 @@ gcloud compute instance-groups managed set-named-ports \
 # Note that health checks will not cause the load balancer to shutdown any instances.
 
 # [START create_health_check]
-gcloud compute http-health-checks create ah-health-check \
+gcloud compute http-health-checks create $HC \
   --request-path /_ah/health \
-  --port 8080
+  --port $PORT
 # [END create_health_check]
 
 # Create a backend service, associate it with the health check and instance group.
@@ -110,7 +110,7 @@ gcloud compute http-health-checks create ah-health-check \
 # [START create_backend_service]
 gcloud compute backend-services create $SERVICE \
   --global \
-  --http-health-checks ah-health-check
+  --http-health-checks $HC
 # [END create_backend_service]
 
 # [START add_backend_service]
@@ -139,15 +139,14 @@ gcloud compute target-http-proxies create $SERVICE-proxy \
 gcloud compute forwarding-rules create $SERVICE-http-rule \
   --global \
   --target-http-proxy $SERVICE-proxy \
-  --ports 8080
+  --ports $PORT
 # [END create_forwarding_rule]
 
 #
 # Autoscaler configuration
 #
 # [START set_autoscaling]
-gcloud compute instance-groups managed set-autoscaling \
-  $GROUP \
+gcloud compute instance-groups managed set-autoscaling $GROUP \
   --max-num-replicas $MAX_INSTANCES \
   --cool-down-period $COOL_DOWN_PERIOD \
   --target-load-balancing-utilization $TARGET_UTILIZATION \
@@ -155,9 +154,9 @@ gcloud compute instance-groups managed set-autoscaling \
 # [END set_autoscaling]
 
 # [START create_firewall]
-gcloud compute firewall-rules create default-allow-http-8080 \
-    --allow tcp:8080 \
-    --source-ranges 0.0.0.0/0 \
-    --target-tags $TAGS \
-    --description "Allow port 8080 access to $TAGS"
+gcloud compute firewall-rules create $SERVICE-allow-http-$PORT \
+  --allow tcp:$PORT \
+  --source-ranges 0.0.0.0/0 \
+  --target-tags $TAGS \
+  --description "Allow port $PORT access to $TAGS"
 # [END create_firewall]
