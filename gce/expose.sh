@@ -142,16 +142,6 @@ gcloud compute forwarding-rules create $SERVICE-http-rule \
   --ports $PORT
 # [END create_forwarding_rule]
 
-#
-# Autoscaler configuration
-#
-# [START set_autoscaling]
-gcloud compute instance-groups managed set-autoscaling $GROUP \
-  --max-num-replicas $MAX_INSTANCES \
-  --cool-down-period $COOL_DOWN_PERIOD \
-  --target-load-balancing-utilization $TARGET_UTILIZATION \
-  --zone $ZONE
-# [END set_autoscaling]
 
 # [START create_firewall]
 gcloud compute firewall-rules create $SERVICE-allow-http-$PORT \

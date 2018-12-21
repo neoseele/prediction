@@ -78,3 +78,13 @@ gcloud compute instance-groups managed set-named-ports $GROUP \
   --zone $ZONE
 # [END create_named_port]
 
+#
+# Autoscaler configuration
+#
+# [START set_autoscaling]
+gcloud compute instance-groups managed set-autoscaling $GROUP \
+  --max-num-replicas $MAX_INSTANCES \
+  --cool-down-period $COOL_DOWN_PERIOD \
+  --target-load-balancing-utilization $TARGET_UTILIZATION \
+  --zone $ZONE
+# [END set_autoscaling]
